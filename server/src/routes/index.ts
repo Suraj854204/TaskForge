@@ -1,0 +1,23 @@
+import { Router } from 'express';
+import ai from './ai.routes';
+import analytics from './analytics.routes';
+import auth from './auth.routes';
+import comments from './comment.routes';
+import notifications from './notification.routes';
+import projects from './project.routes';
+import tasks from './task.routes';
+import users from './user.routes';
+import workspaces from './workspace.routes';
+
+const router = Router();
+router.get('/health', (_req, res) => res.json({ success: true, message: 'TaskForge API is running', data: {} }));
+router.use('/auth', auth);
+router.use('/users', users);
+router.use('/workspaces', workspaces);
+router.use('/projects', projects);
+router.use('/tasks', tasks);
+router.use('/comments', comments);
+router.use('/notifications', notifications);
+router.use('/analytics', analytics);
+router.use('/ai', ai);
+export default router;
