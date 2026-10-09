@@ -3,18 +3,57 @@
 @tailwind utilities;
 
 @layer base {
+  html { -webkit-tap-highlight-color: transparent; }
   body { @apply bg-slate-50 font-sans text-slate-800 antialiased; }
   :focus-visible { @apply outline-2 outline-offset-2 outline-steel; }
+  ::-webkit-scrollbar { height: 8px; width: 8px; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-slate-300; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 }
 
 @layer components {
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50; }
-  .btn-primary { @apply btn bg-steel text-white hover:bg-steel-dark; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-steel text-white shadow-sm hover:bg-steel-dark; }
   .btn-secondary { @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-100; }
   .btn-danger { @apply btn bg-red-600 text-white hover:bg-red-700; }
   .btn-ghost { @apply btn text-slate-600 hover:bg-slate-100; }
-  .input { @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-steel focus:outline-none focus:ring-2 focus:ring-steel/20 disabled:bg-slate-100; }
+  .input { @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:border-steel focus:outline-none focus:ring-2 focus:ring-steel/20 disabled:bg-slate-100; }
   .label { @apply mb-1 block text-sm font-medium text-slate-700; }
   .field-error { @apply mt-1 text-xs text-red-600; }
-  .card { @apply rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5; }
+  .card { @apply rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(16,32,48,0.04),0_2px_8px_rgba(16,32,48,0.04)] sm:p-5; }
+  .chip { @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-steel hover:text-steel; }
+  .chip-active { @apply border-steel bg-steel text-white hover:text-white; }
 }
+
+/* ---- Dark theme: overrides for the utility classes used across the app ---- */
+.dark { color-scheme: dark; }
+.dark body { background-color: #0d141b; color: #cbd5e1; }
+.dark .bg-white, .dark .bg-white\/90, .dark .bg-white\/95, .dark .card, .dark .btn-secondary, .dark .chip { background-color: #151f29; }
+.dark .bg-slate-50 { background-color: #0d141b; }
+.dark .bg-slate-100, .dark .bg-slate-100\/70, .dark .hover\:bg-slate-50:hover, .dark .hover\:bg-slate-100:hover, .dark .btn-ghost:hover, .dark .btn-secondary:hover { background-color: #1b2733; }
+.dark .bg-slate-200 { background-color: #243342; }
+.dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-300, .dark .card, .dark .btn-secondary, .dark .chip, .dark .input { border-color: #263646; }
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]), .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { border-color: #263646; }
+.dark .text-ink { color: #f1f5f9; }
+.dark .text-slate-800, .dark .text-slate-700, .dark .btn-secondary { color: #e2e8f0; }
+.dark .text-slate-600, .dark .btn-ghost, .dark .chip { color: #cbd5e1; }
+.dark .text-slate-500 { color: #94a3b8; }
+.dark .text-slate-400 { color: #7c8ca0; }
+.dark .chip-active { background-color: #2e6a9e; border-color: #2e6a9e; color: #fff; }
+.dark .input { background-color: #101922; color: #e2e8f0; }
+.dark .bg-steel-light, .dark .bg-steel-light\/50 { background-color: #1a2e42; }
+.dark .text-steel-dark { color: #8cc0ec; }
+.dark .text-steel { color: #6fb1e8; }
+.dark .bg-brass-light, .dark .bg-brass-light\/60 { background-color: #35291a; }
+.dark .text-amber-800 { color: #f0c77e; }
+.dark .bg-red-50 { background-color: #3a1d1f; }
+.dark .border-red-200 { border-color: #5b2a2d; }
+.dark .text-red-800, .dark .text-red-700, .dark .text-red-600 { color: #fca5a5; }
+.dark .bg-emerald-100 { background-color: #12372a; }
+.dark .text-emerald-700, .dark .text-emerald-600 { color: #6ee7b7; }
+.dark .bg-sky-100 { background-color: #10324a; }
+.dark .text-sky-700 { color: #7dd3fc; }
+.dark .bg-orange-100 { background-color: #432511; }
+.dark .text-orange-700 { color: #fdba74; }
+.dark .bg-red-100 { background-color: #431a1a; }
+.dark .bg-slate-200.text-slate-500 { color: #94a3b8; }

@@ -18,7 +18,7 @@ export interface Task {
   _id: string; title: string; description: string; status: TaskStatus; priority: Priority;
   project: { _id: string; name: string; color: string }; assignedTo: UserLite | null; createdBy: UserLite;
   dueDate: string | null; tags: string[]; estimatedHours: number | null; actualHours: number | null;
-  createdAt: string; completedAt: string | null;
+  createdAt: string; completedAt: string | null; subtasks: { title: string; done: boolean }[];
 }
 export interface Comment { _id: string; content: string; author: UserLite; createdAt: string; updatedAt: string }
 export interface Activity { _id: string; message: string; action: string; actor: UserLite; createdAt: string }

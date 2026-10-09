@@ -15,7 +15,7 @@ export default function KanbanBoard({ tasks, onMove }: Props) {
   const [over, setOver] = useState<TaskStatus | null>(null);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0 xl:grid xl:grid-cols-4 xl:overflow-visible">
       {STATUSES.map((status) => {
         const column = tasks.filter((t) => t.status === status);
         return (
@@ -31,7 +31,7 @@ export default function KanbanBoard({ tasks, onMove }: Props) {
               const t = tasks.find((x) => x._id === id);
               if (t && t.status !== status) onMove(id, status);
             }}
-            className={`min-h-40 rounded-lg border border-t-4 border-slate-200 bg-slate-100/70 p-3 transition ${COLUMN_ACCENT[status]} ${over === status ? 'bg-steel-light ring-2 ring-steel/40' : ''}`}
+            className={`min-h-40 w-[82%] shrink-0 snap-start rounded-xl border sm:w-72 xl:w-auto border-t-4 border-slate-200 bg-slate-100/70 p-3 transition ${COLUMN_ACCENT[status]} ${over === status ? 'bg-steel-light ring-2 ring-steel/40' : ''}`}
           >
             <header className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-slate-700">{statusLabel(status)}</h3>

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
 import Admin from './pages/Admin';
 import Analytics from './pages/Analytics';
+import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Notifications from './pages/Notifications';
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/projects/:id" element={<ProjectDetail />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/tasks/:id" element={<TaskDetail />} />
+          <Route path="/calendar" element={<Calendar />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} />

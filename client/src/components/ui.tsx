@@ -129,3 +129,29 @@ export function ProgressBar({ value, color = '#2E6A9E' }: { value: number; color
     </div>
   );
 }
+
+export function StatTile({ label, value, hint, icon, tone = 'steel' }: { label: string; value: ReactNode; hint?: string; icon: ReactNode; tone?: 'steel' | 'brass' | 'red' | 'green' }) {
+  const tones = { steel: 'bg-steel-light text-steel', brass: 'bg-brass-light text-brass', red: 'bg-red-50 text-red-600', green: 'bg-emerald-100 text-emerald-600' };
+  return (
+    <div className="card flex items-center gap-3 !p-4">
+      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${tones[tone]}`}>{icon}</span>
+      <div className="min-w-0">
+        <p className="truncate text-xs font-medium text-slate-500">{label}</p>
+        <p className="text-2xl font-bold leading-tight text-ink">{value}</p>
+        {hint && <p className="truncate text-[11px] text-slate-400">{hint}</p>}
+      </div>
+    </div>
+  );
+}
+
+export function Ring({ value, size = 96, stroke = 9 }: { value: number; size?: number; stroke?: number }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${value}% complete`}>
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#C98A2B" strokeWidth={stroke} strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - value / 100)} transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+      <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fill="#fff" fontSize={size * 0.24} fontWeight="700">{value}%</text>
+    </svg>
+  );
+}
