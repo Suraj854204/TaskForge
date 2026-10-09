@@ -1,2 +1,2 @@
-export { generateTaskSuggestion, isAiEnabled } from './taskAssistant';
+export { generateTaskSuggestion, isAiEnabled, parseSuggestion } from './taskAssistant';
 export type { TaskSuggestion } from './taskAssistant';

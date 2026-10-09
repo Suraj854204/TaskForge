@@ -16,7 +16,7 @@ export const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   aiApiKey: process.env.AI_API_KEY || '',
-  aiModel: process.env.AI_MODEL || 'claude-sonnet-5-5',
+  aiModel: process.env.AI_MODEL || 'gemini-3.5-flash',
 };
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

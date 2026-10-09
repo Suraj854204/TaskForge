@@ -80,8 +80,8 @@ MONGODB_URI=mongodb://127.0.0.1:27017/taskforge
 JWT_SECRET=replace-with-a-long-random-string
 JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5173
-AI_API_KEY=            # optional, enables the AI Task Assistant
-AI_MODEL=claude-sonnet-5-5
+AI_API_KEY=            # optional Google Gemini API key, enables the AI Task Assistant
+AI_MODEL=gemini-3.5-flash
 ```
 
 Copy `server/.env.example` to `server/.env`. Never commit `.env`. The optional `client/.env` only needs `VITE_API_URL` when the API runs on a different origin.
