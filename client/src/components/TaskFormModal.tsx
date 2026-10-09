@@ -33,6 +33,7 @@ export default function TaskFormModal({ task, defaultProject, onClose, onSaved }
   const members = useMembers();
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiBusy, setAiBusy] = useState(false);
+  const [subtasks, setSubtasks] = useState<string[]>([]);
 
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<Values>({
     resolver: zodResolver(schema),
@@ -62,7 +63,7 @@ export default function TaskFormModal({ task, defaultProject, onClose, onSaved }
     };
     try {
       if (task) await patch(`/tasks/${task._id}`, payload);
-      else await post('/tasks', { ...payload, project: v.project });
+      else await post('/tasks', { ...payload, project: v.project, subtasks: subtasks.map((title) => ({ title: title.slice(0, 200), done: false })) });
       toast.success(task ? 'Task updated' : 'Task created');
       onSaved();
       onClose();
@@ -75,9 +76,9 @@ export default function TaskFormModal({ task, defaultProject, onClose, onSaved }
     setAiBusy(true);
     try {
       const { suggestion: s } = await post<{ suggestion: { title: string; description: string; subtasks: string[]; priority: Values['priority']; estimatedHours: number; tags: string[] } }>('/ai/task-assistant', { prompt: aiPrompt });
-      const checklist = s.subtasks.length ? `\n\nSubtasks:\n${s.subtasks.map((t) => `- [ ] ${t}`).join('\n')}` : '';
+      setSubtasks(s.subtasks);
       setValue('title', s.title.slice(0, 120), { shouldValidate: true });
-      setValue('description', (s.description + checklist).slice(0, 2000));
+      setValue('description', s.description.slice(0, 2000));
       setValue('priority', s.priority);
       setValue('estimatedHours', String(s.estimatedHours));
       setValue('tags', s.tags.join(', '));
@@ -99,6 +100,19 @@ export default function TaskFormModal({ task, defaultProject, onClose, onSaved }
               <input id="ai" className="input" value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="e.g. Build authentication system for the application" />
               <button type="button" className="btn-secondary shrink-0" onClick={askAi} disabled={aiBusy || aiPrompt.trim().length < 5}>{aiBusy && <Spinner />}Generate</button>
             </div>
+          </div>
+        )}
+        {!task && subtasks.length > 0 && (
+          <div className="rounded-lg border border-slate-200 p-3">
+            <p className="mb-1 text-sm font-medium">Suggested subtasks <span className="font-normal text-slate-400">(added to the task)</span></p>
+            <ul className="space-y-1 text-sm text-slate-600">
+              {subtasks.map((s, i) => (
+                <li key={i} className="flex items-center justify-between gap-2">
+                  <span className="truncate">• {s}</span>
+                  <button type="button" className="text-xs text-slate-400 hover:text-red-600" onClick={() => setSubtasks((x) => x.filter((_, j) => j !== i))}>Remove</button>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
         <div>

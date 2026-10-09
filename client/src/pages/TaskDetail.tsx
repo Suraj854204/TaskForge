@@ -2,7 +2,7 @@ import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import TaskFormModal from '../components/TaskFormModal';
-import { Avatar, AsyncView, ConfirmDialog, DeadlineBadge, EmptyState, PriorityBadge, Spinner, StatusBadge } from '../components/ui';
+import { Avatar, AsyncView, ConfirmDialog, DeadlineBadge, EmptyState, PriorityBadge, ProgressBar, Spinner, StatusBadge } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useAsync } from '../hooks/useAsync';
@@ -29,6 +29,10 @@ export default function TaskDetail() {
   const task = detail.data?.task;
   const canEdit = task && (user?.role === 'ADMIN' || task.createdBy._id === user?._id || task.assignedTo?._id === user?._id);
   const canDelete = task && (user?.role === 'ADMIN' || task.createdBy._id === user?._id);
+  const [newSub, setNewSub] = useState('');
+  const subs = task?.subtasks ?? [];
+  const subsDone = subs.filter((s) => s.done).length;
+  const saveSubs = (next: { title: string; done: boolean }[]) => quickUpdate({ subtasks: next.map(({ title, done }) => ({ title, done })) });
 
   const quickUpdate = async (body: object) => {
     try { await patch(`/tasks/${id}`, body); detail.refresh(); } catch (e) { toast.error(errMsg(e)); }
@@ -69,6 +73,30 @@ export default function TaskDetail() {
                 <div className="mt-3 flex flex-wrap items-center gap-2"><StatusBadge status={task.status} /><PriorityBadge priority={task.priority} /><DeadlineBadge task={task} /></div>
                 <p className="mt-4 whitespace-pre-wrap text-sm text-slate-700">{task.description || 'No description provided.'}</p>
                 {task.tags.length > 0 && <div className="mt-4 flex flex-wrap gap-1.5">{task.tags.map((t) => <span key={t} className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-600">#{t}</span>)}</div>}
+              </div>
+
+              <div className="card">
+                <div className="mb-3 flex items-center justify-between">
+                  <h2 className="font-semibold text-ink">Checklist</h2>
+                  {subs.length > 0 && <span className="text-xs text-slate-500">{subsDone}/{subs.length} done</span>}
+                </div>
+                {subs.length > 0 && <div className="mb-3"><ProgressBar value={Math.round((subsDone / subs.length) * 100)} /></div>}
+                <ul className="space-y-1">
+                  {subs.map((s, i) => (
+                    <li key={i} className="group flex items-center gap-2 rounded-md px-1 py-1 hover:bg-slate-50">
+                      <input type="checkbox" className="h-4 w-4 accent-[#2E6A9E]" checked={s.done} disabled={!canEdit} onChange={() => saveSubs(subs.map((x, j) => (j === i ? { ...x, done: !x.done } : x)))} aria-label={s.title} />
+                      <span className={`flex-1 text-sm ${s.done ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{s.title}</span>
+                      {canEdit && <button className="text-xs text-slate-400 opacity-100 hover:text-red-600 sm:opacity-0 sm:group-hover:opacity-100" onClick={() => saveSubs(subs.filter((_, j) => j !== i))} aria-label={`Remove ${s.title}`}>Remove</button>}
+                    </li>
+                  ))}
+                </ul>
+                {subs.length === 0 && <p className="text-sm text-slate-500">Break this task into smaller steps.</p>}
+                {canEdit && (
+                  <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); if (!newSub.trim() || subs.length >= 30) return; saveSubs([...subs, { title: newSub.trim(), done: false }]); setNewSub(''); }}>
+                    <input className="input" placeholder="Add a step…" maxLength={200} value={newSub} onChange={(e) => setNewSub(e.target.value)} aria-label="New checklist item" />
+                    <button className="btn-secondary shrink-0" disabled={!newSub.trim()}>Add</button>
+                  </form>
+                )}
               </div>
 
               <div className="card">

@@ -36,3 +36,13 @@ export const fmtDate = (d?: string | null) =>
 export const fmtDateTime = (d: string) =>
   new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 export const toDateInput = (d?: string | null) => (d ? new Date(d).toISOString().slice(0, 10) : '');
+
+export function timeAgo(d: string, now: Date = new Date()): string {
+  const mins = Math.floor((now.getTime() - new Date(d).getTime()) / 60_000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return days < 7 ? `${days}d ago` : fmtDate(d);
+}
