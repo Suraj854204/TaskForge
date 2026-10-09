@@ -4,6 +4,7 @@ import { PriorityBars, ProjectProgressChart, ProjectProgressRow, Slice, StatusPi
 import { Avatar, AsyncView, DeadlineBadge, EmptyState, Ring, StatTile } from '../components/ui';
 import { useAuth } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
+import { useRealtime } from '../hooks/useRealtime';
 import { get } from '../services/api';
 import { timeAgo } from '../utils/date';
 
@@ -23,7 +24,8 @@ const greeting = () => {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { data, loading, error, reload } = useAsync(() => get<DashboardData>('/analytics/dashboard'));
+  const { data, loading, error, reload, refresh } = useAsync(() => get<DashboardData>('/analytics/dashboard'));
+  useRealtime('tasks:changed', refresh);
   const s = data?.stats;
 
   return (

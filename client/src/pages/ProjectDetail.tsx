@@ -7,6 +7,7 @@ import TaskFormModal from '../components/TaskFormModal';
 import { Avatar, AsyncView, ConfirmDialog, EmptyState, PageHeader, ProgressBar, StatCard, StatusBadge } from '../components/ui';
 import { useToast } from '../context/ToastContext';
 import { useAsync } from '../hooks/useAsync';
+import { useRealtime } from '../hooks/useRealtime';
 import { del, errMsg, get, patch } from '../services/api';
 import type { Paginated, Project, Task, TaskStatus } from '../types';
 import { fmtDate } from '../utils/date';
@@ -17,6 +18,7 @@ export default function ProjectDetail() {
   const toast = useToast();
   const project = useAsync(async () => (await get<{ project: Project }>(`/projects/${id}`)).project, [id]);
   const tasks = useAsync(async () => (await get<Paginated<Task>>('/tasks', { project: id, limit: 200 })).items, [id]);
+  useRealtime('tasks:changed', (p) => { if (!p.projectId || p.projectId === id) { tasks.refresh(); project.refresh(); } });
   const [modal, setModal] = useState<'task' | 'edit' | 'delete' | null>(null);
   const [busy, setBusy] = useState(false);
 

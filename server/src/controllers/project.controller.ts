@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Project, Task, User } from '../models';
 import { deleteTasks } from '../services/task.service';
 import { notify } from '../services/notification.service';
+import { emitToWorkspace } from '../services/realtime';
 import { ApiError } from '../utils/ApiError';
 import { sendSuccess } from '../utils/http';
 
@@ -103,5 +104,6 @@ export async function deleteProject(req: Request, res: Response) {
   assertCanManage(req, project);
   await deleteTasks({ project: project._id });
   await project.deleteOne();
+  emitToWorkspace(req.user!.workspace, 'tasks:changed', { projectId: String(project._id) });
   sendSuccess(res, {}, 'Project deleted successfully');
 }

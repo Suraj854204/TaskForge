@@ -1,6 +1,7 @@
 import { Bell } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useRealtime } from '../hooks/useRealtime';
 import { get, patch } from '../services/api';
 import type { NotificationItem } from '../types';
 import { fmtDateTime } from '../utils/date';
@@ -20,6 +21,7 @@ export default function NotificationBell() {
     } catch { /* bell stays quiet on failure; the Notifications page shows errors */ }
   };
 
+  useRealtime('notification:new', load);
   useEffect(() => {
     load();
     const t = setInterval(load, 60_000);

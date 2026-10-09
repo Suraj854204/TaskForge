@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { get, post, TOKEN_KEY } from '../services/api';
+import { disconnectSocket } from '../services/socket';
 import type { User } from '../types';
 
 interface AuthState {
@@ -35,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     try { await post('/auth/logout'); } catch { /* token may already be invalid */ }
     localStorage.removeItem(TOKEN_KEY);
+    disconnectSocket();
     setUser(null);
   }, []);
 

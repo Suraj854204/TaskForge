@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Comment, Task } from '../models';
 import { getTaskOr404 } from '../services/task.service';
 import { notify } from '../services/notification.service';
+import { emitToWorkspace } from '../services/realtime';
 import { ApiError } from '../utils/ApiError';
 import { sendSuccess } from '../utils/http';
 
@@ -22,6 +23,7 @@ export async function addComment(req: Request, res: Response) {
       }),
     ),
   );
+  emitToWorkspace(user.workspace, 'comments:changed', { taskId: String(task._id) });
   sendSuccess(res, { comment: await comment.populate('author', 'name avatar') }, 'Comment added', 201);
 }
 
@@ -47,11 +49,13 @@ export async function editComment(req: Request, res: Response) {
   const comment = await ownComment(req, false);
   comment.content = req.body.content;
   await comment.save();
+  emitToWorkspace(req.user!.workspace, 'comments:changed', { taskId: String(comment.task) });
   sendSuccess(res, { comment: await comment.populate('author', 'name avatar') }, 'Comment updated');
 }
 
 export async function deleteComment(req: Request, res: Response) {
   const comment = await ownComment(req, true);
   await comment.deleteOne();
+  emitToWorkspace(req.user!.workspace, 'comments:changed', { taskId: String(comment.task) });
   sendSuccess(res, {}, 'Comment deleted');
 }

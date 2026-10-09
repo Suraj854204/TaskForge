@@ -6,6 +6,7 @@ import { Avatar, AsyncView, DeadlineBadge, EmptyState, PageHeader, PriorityBadge
 import { useToast } from '../context/ToastContext';
 import { useAsync } from '../hooks/useAsync';
 import { useMembers } from '../hooks/useMembers';
+import { useRealtime } from '../hooks/useRealtime';
 import { errMsg, get } from '../services/api';
 import type { Paginated, Project, Task } from '../types';
 import { PRIORITIES, STATUSES, statusLabel } from '../utils/constants';
@@ -58,6 +59,7 @@ export default function Tasks() {
     () => get<Paginated<Task>>('/tasks', { ...Object.fromEntries(params), limit: LIMIT }),
     [query],
   );
+  useRealtime('tasks:changed', refresh);
   const filtered = FILTER_KEYS.some((k) => params.get(k));
   const page = Number(params.get('page') ?? 1);
 

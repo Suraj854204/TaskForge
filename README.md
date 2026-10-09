@@ -17,6 +17,7 @@
 - **AI Task Assistant** (optional): turns a sentence into a task with subtasks, priority, estimate and tags. The app works fully without it
 - **Profile** (name, avatar URL, change password, my tasks) and **Admin panel**
 - Loading, error and empty states on every major page, responsive layout, toasts, confirmation dialogs
+- **Live updates** via Socket.IO: new notifications, comments and task changes appear without refreshing
 - **Dark mode** (remembers your choice, follows system on first visit)
 - **Command palette** (`Ctrl/Cmd + K`): jump to any page, create a task, toggle theme, or search tasks
 - **Calendar view** of task deadlines (month grid on desktop, dot markers + day list on mobile)
@@ -113,6 +114,14 @@ npm run dev        # http://localhost:5173  (proxies /api to :5000)
 npm run dev
 ```
 
+### Run with Docker (one command)
+```bash
+cp .env.example .env        # set JWT_SECRET
+docker compose up --build   # app at http://localhost:8080
+docker compose exec server node dist/seed.js   # optional demo data
+```
+Services: MongoDB, the API (port 5000, internal) and the client served by nginx, which proxies `/api` and `/socket.io` to the API.
+
 ### Seed data
 ```bash
 npm run seed
@@ -125,6 +134,9 @@ npm test --prefix server    # API tests (downloads an in-memory MongoDB on first
 npm test --prefix client    # deadline logic + component tests
 npm run typecheck --prefix server && npm run typecheck --prefix client
 ```
+
+### Continuous integration
+`.github/workflows/ci.yml` runs typecheck and tests for both apps (plus the client build) on every push and pull request.
 
 ### Production build
 ```bash

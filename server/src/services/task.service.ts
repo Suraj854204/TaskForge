@@ -3,6 +3,7 @@ import { Activity, Comment, Notification, Project, Task, User, UserDoc } from '.
 import { ApiError } from '../utils/ApiError';
 import { escapeRegex } from '../utils/http';
 import { logActivity, notify } from './notification.service';
+import { emitToWorkspace } from './realtime';
 
 export const TASK_POPULATE = [
   { path: 'assignedTo', select: 'name email avatar' },
@@ -50,6 +51,7 @@ export async function createTask(user: UserDoc, input: any) {
       relatedTask: task._id,
     });
   }
+  emitToWorkspace(user.workspace, 'tasks:changed', { taskId: String(task._id), projectId: String(task.project) });
   return task.populate(TASK_POPULATE);
 }
 
@@ -115,6 +117,7 @@ export async function updateTask(user: UserDoc, taskId: string, patch: any) {
 
   task.set(patch);
   await task.save();
+  emitToWorkspace(user.workspace, 'tasks:changed', { taskId: String(task._id), projectId: String(task.project) });
   return task.populate(TASK_POPULATE);
 }
 
@@ -136,6 +139,7 @@ export async function deleteTask(user: UserDoc, taskId: string) {
     throw new ApiError(403, 'Only admins or the creator can delete this task');
   }
   await deleteTasks({ _id: task._id });
+  emitToWorkspace(user.workspace, 'tasks:changed', { taskId: String(task._id), projectId: String(task.project) });
 }
 
 const SORTS: Record<string, Record<string, 1 | -1>> = {

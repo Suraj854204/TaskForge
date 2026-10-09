@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { Activity, Notification } from '../models';
+import { emitToUser } from './realtime';
 import { NOTIFICATION_TYPES } from '../types';
 
 type Id = Types.ObjectId | string;
@@ -22,6 +23,7 @@ export async function notify(p: {
     relatedTask: p.relatedTask ?? null,
     relatedProject: p.relatedProject ?? null,
   });
+  emitToUser(p.recipient, 'notification:new');
 }
 
 export const logActivity = (task: Id, actor: Id, action: string, message: string) =>

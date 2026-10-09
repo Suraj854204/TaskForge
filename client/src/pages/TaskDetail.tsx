@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useAsync } from '../hooks/useAsync';
 import { useMembers } from '../hooks/useMembers';
+import { useRealtime } from '../hooks/useRealtime';
 import { del, errMsg, get, patch, post } from '../services/api';
 import type { Activity, Comment, Priority, Task, TaskStatus } from '../types';
 import { PRIORITIES, STATUSES, statusLabel } from '../utils/constants';
@@ -20,6 +21,8 @@ export default function TaskDetail() {
   const members = useMembers();
   const detail = useAsync(() => get<{ task: Task; activities: Activity[] }>(`/tasks/${id}`), [id]);
   const comments = useAsync(async () => (await get<{ comments: Comment[] }>(`/tasks/${id}/comments`)).comments, [id]);
+  useRealtime('comments:changed', (p) => { if (p.taskId === id) comments.refresh(); });
+  useRealtime('tasks:changed', (p) => { if (p.taskId === id) detail.refresh(); });
   const [modal, setModal] = useState<'edit' | 'delete' | null>(null);
   const [text, setText] = useState('');
   const [posting, setPosting] = useState(false);
