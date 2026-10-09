@@ -138,6 +138,9 @@ npm run typecheck --prefix server && npm run typecheck --prefix client
 ### Continuous integration
 `.github/workflows/ci.yml` runs typecheck and tests for both apps (plus the client build) on every push and pull request.
 
+### Deploy to Render + Vercel
+See [DEPLOYMENT.md](DEPLOYMENT.md): MongoDB Atlas -> Render (API, `render.yaml`) -> Vercel (client, `client/vercel.json`) -> set `CLIENT_URL`.
+
 ### Production build
 ```bash
 npm run build

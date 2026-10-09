@@ -18,3 +18,13 @@ export const env = {
   aiApiKey: process.env.AI_API_KEY || '',
   aiModel: process.env.AI_MODEL || 'claude-sonnet-5-5',
 };
+
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const originPatterns = env.clientUrl
+  .split(',')
+  .map((s) => s.trim().replace(/\/$/, ''))
+  .filter(Boolean)
+  .map((p) => new RegExp(`^${p.split('*').map(escapeRe).join('[a-z0-9-]+')}$`, 'i'));
+
+/** CLIENT_URL may hold several comma-separated origins; `*` matches one subdomain label. */
+export const isAllowedOrigin = (origin?: string) => !origin || originPatterns.some((r) => r.test(origin));

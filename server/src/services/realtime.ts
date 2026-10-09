@@ -1,14 +1,14 @@
 import http from 'http';
 import jwt from 'jsonwebtoken';
 import { Server } from 'socket.io';
-import { env } from '../config/env';
+import { env, isAllowedOrigin } from '../config/env';
 import { User } from '../models';
 
 let io: Server | null = null;
 
 /** Optional live updates. Every emit is a no-op until initRealtime() runs, so tests and scripts are unaffected. */
 export function initRealtime(server: http.Server) {
-  io = new Server(server, { cors: { origin: env.clientUrl.split(',').map((s) => s.trim()), credentials: true } });
+  io = new Server(server, { cors: { origin: (origin, cb) => cb(null, isAllowedOrigin(origin)), credentials: true } });
 
   io.use(async (socket, next) => {
     try {

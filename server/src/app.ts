@@ -3,7 +3,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { env } from './config/env';
+import { env, isAllowedOrigin } from './config/env';
 import { errorHandler, notFound } from './middleware/error';
 import routes from './routes';
 
@@ -11,7 +11,7 @@ export function createApp() {
   const app = express();
   app.set('trust proxy', 1);
   app.use(helmet());
-  app.use(cors({ origin: env.clientUrl.split(',').map((s) => s.trim()), credentials: true }));
+  app.use(cors({ origin: (origin, cb) => cb(null, isAllowedOrigin(origin)), credentials: true }));
   app.use(express.json({ limit: '1mb' }));
   if (env.nodeEnv !== 'test') app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
   app.use(
