@@ -1,3 +1,4 @@
+
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
@@ -39,8 +40,14 @@ export async function registerUser(input: { name: string; email: string; passwor
 
 export async function loginUser(email: string, password: string) {
   const user = await User.findOne({ email }).select('+passwordHash');
-  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+
+  if (
+    !user ||
+    typeof user.passwordHash !== 'string' ||
+    !(await bcrypt.compare(password, user.passwordHash))
+  ) {
     throw new ApiError(401, 'Invalid email or password');
   }
+
   return { token: signToken(user), user: await publicUser(user._id) };
 }
