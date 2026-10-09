@@ -68,6 +68,18 @@ async function seed() {
     }
   }
 
+  await Task.updateOne({ _id: tasks[7]._id }, { subtasks: [
+    { title: 'Define register/login payloads', done: true },
+    { title: 'Implement JWT middleware', done: true },
+    { title: 'Add role-based guards', done: false },
+    { title: 'Write integration tests', done: false },
+  ] });
+  await Task.updateOne({ _id: tasks[2]._id }, { subtasks: [
+    { title: 'Desktop layout', done: true },
+    { title: 'Mobile drawer menu', done: true },
+    { title: 'Keyboard navigation', done: false },
+  ] });
+
   await Comment.create([
     { task: tasks[2]._id, author: priya._id, content: 'Mobile menu is done, ready for review.' },
     { task: tasks[2]._id, author: admin._id, content: 'Looks good — checking the tablet breakpoint.' },

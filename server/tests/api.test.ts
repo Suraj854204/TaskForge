@@ -140,3 +140,22 @@ describe('notifications & analytics', () => {
     expect(res.status).toBe(503);
   });
 });
+
+describe('subtasks & quick filters', () => {
+  it('stores subtasks and filters overdue / unassigned tasks', async () => {
+    const { admin, project } = await setup();
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString();
+    const created = await request(app)
+      .post('/api/tasks')
+      .set(auth(admin.token))
+      .send({ title: 'Late task', project: project._id, dueDate: yesterday, subtasks: [{ title: 'Step one' }, { title: 'Step two', done: true }] });
+    expect(created.status).toBe(201);
+    expect(created.body.data.task.subtasks).toHaveLength(2);
+    await request(app).post('/api/tasks').set(auth(admin.token)).send({ title: 'On time task', project: project._id });
+
+    const overdue = await request(app).get('/api/tasks?overdue=true').set(auth(admin.token));
+    expect(overdue.body.data.items.map((t: any) => t.title)).toEqual(['Late task']);
+    const unassigned = await request(app).get('/api/tasks?unassigned=true').set(auth(admin.token));
+    expect(unassigned.body.data.pagination.total).toBe(2);
+  });
+});

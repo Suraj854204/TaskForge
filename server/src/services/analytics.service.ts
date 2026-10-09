@@ -1,4 +1,4 @@
-import { Project, Task, UserDoc } from '../models';
+import { Activity, Project, Task, UserDoc } from '../models';
 import { PRIORITIES, TASK_STATUSES } from '../types';
 
 const DAY = 86_400_000;
@@ -49,7 +49,7 @@ export async function getDashboard(user: UserDoc) {
   const open = { $ne: 'COMPLETED' };
   const group = (field: string) => Task.aggregate([{ $match: { workspace } }, { $group: { _id: `$${field}`, count: { $sum: 1 } } }]);
 
-  const [totalProjects, totalTasks, completed, overdue, assignedToMe, highPriority, byStatus, byPriority, progress, completedRows] =
+  const [totalProjects, totalTasks, completed, overdue, assignedToMe, highPriority, byStatus, byPriority, progress, completedRows, upcoming, recentActivity] =
     await Promise.all([
       Project.countDocuments({ workspace }),
       Task.countDocuments({ workspace }),
@@ -63,6 +63,23 @@ export async function getDashboard(user: UserDoc) {
       Task.find({ workspace, status: 'COMPLETED', completedAt: { $gte: new Date(Date.now() - 8 * 7 * DAY) } })
         .select('completedAt')
         .lean(),
+      Task.find({ workspace, status: open, dueDate: { $ne: null } })
+        .sort({ dueDate: 1 })
+        .limit(6)
+        .select('title dueDate priority status project assignedTo createdAt')
+        .populate('assignedTo', 'name avatar')
+        .populate('project', 'name color')
+        .lean(),
+      Task.find({ workspace })
+        .distinct('_id')
+        .then((ids) =>
+          Activity.find({ task: { $in: ids } })
+            .sort({ createdAt: -1 })
+            .limit(8)
+            .populate('actor', 'name avatar')
+            .populate('task', 'title')
+            .lean(),
+        ),
     ]);
 
   const buckets = weeklyBuckets(8);
@@ -86,6 +103,8 @@ export async function getDashboard(user: UserDoc) {
       })),
       projectProgress: progress,
     },
+    upcoming,
+    recentActivity,
   };
 }
 

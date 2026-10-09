@@ -20,6 +20,7 @@ const taskSchema = new Schema(
     estimatedHours: { type: Number, min: 0, max: 1000, default: null },
     actualHours: { type: Number, min: 0, max: 1000, default: null },
     attachments: [{ name: String, url: String }],
+    subtasks: [{ title: { type: String, required: true, trim: true, maxlength: 200 }, done: { type: Boolean, default: false } }],
     completedAt: { type: Date, default: null },
   },
   { timestamps: true },

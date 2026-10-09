@@ -156,6 +156,11 @@ export async function listTasks(user: UserDoc, q: any) {
     if (q.dueAfter) filter.dueDate.$gte = q.dueAfter;
     if (q.dueBefore) filter.dueDate.$lte = q.dueBefore;
   }
+  if (q.overdue) {
+    filter.dueDate = { ...(filter.dueDate ?? {}), $lt: new Date() };
+    if (!q.status) filter.status = { $ne: 'COMPLETED' };
+  }
+  if (q.unassigned) filter.assignedTo = null;
   if (q.search) {
     const rx = new RegExp(escapeRegex(q.search), 'i');
     filter.$or = [{ title: rx }, { description: rx }, { tags: rx }];

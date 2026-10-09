@@ -67,6 +67,7 @@ export const taskSchema = z.object({
   tags: z.array(z.string().trim().min(1).max(30)).max(10).optional(),
   estimatedHours: z.number().min(0).max(1000).nullable().optional(),
   actualHours: z.number().min(0).max(1000).nullable().optional(),
+  subtasks: z.array(z.object({ title: z.string().trim().min(1).max(200), done: z.boolean().default(false) })).max(30).optional(),
 });
 export const updateTaskSchema = taskSchema.omit({ project: true }).partial();
 export const taskQuerySchema = z.object({
@@ -79,6 +80,8 @@ export const taskQuerySchema = z.object({
   assignedTo: z.union([objectId, z.literal('me')]).optional(),
   dueBefore: z.coerce.date().optional(),
   dueAfter: z.coerce.date().optional(),
+  overdue: z.enum(['true']).optional(),
+  unassigned: z.enum(['true']).optional(),
   sort: z.enum(['newest', 'oldest', 'priority', 'deadline']).default('newest'),
 });
 
