@@ -17,6 +17,13 @@
 - **AI Task Assistant** (optional): turns a sentence into a task with subtasks, priority, estimate and tags. The app works fully without it
 - **Profile** (name, avatar URL, change password, my tasks) and **Admin panel**
 - Loading, error and empty states on every major page, responsive layout, toasts, confirmation dialogs
+- **Dark mode** (remembers your choice, follows system on first visit)
+- **Command palette** (`Ctrl/Cmd + K`): jump to any page, create a task, toggle theme, or search tasks
+- **Calendar view** of task deadlines (month grid on desktop, dot markers + day list on mobile)
+- **Task checklists** with progress bar; AI-suggested subtasks become real checklist items
+- **Quick filter chips** (mine, overdue, unassigned, urgent, in review) and **CSV export** of the filtered list
+- **Dashboard** with progress ring, upcoming deadlines and a recent-activity feed
+- **Mobile-first layout**: bottom navigation bar, slide-in drawer, card lists instead of tables on phones, swipeable Kanban columns
 
 ## Technology stack
 
@@ -55,7 +62,7 @@ Routes only wire middleware to controllers; controllers handle HTTP; business ru
 | Users | `GET/PATCH /api/users/me` · `PATCH /api/users/me/password` |
 | Workspaces | `POST /api/workspaces` · `GET/PATCH/DELETE /api/workspaces/:id` · `GET/POST /api/workspaces/:id/members` · `PATCH/DELETE /api/workspaces/:id/members/:userId` |
 | Projects | `POST/GET /api/projects` · `GET/PATCH/DELETE /api/projects/:id` |
-| Tasks | `POST/GET /api/tasks` · `GET/PATCH/DELETE /api/tasks/:id` |
+| Tasks | `POST/GET /api/tasks` (filters incl. `overdue=true`, `unassigned=true`) · `GET/PATCH/DELETE /api/tasks/:id` |
 | Comments | `POST/GET /api/tasks/:taskId/comments` · `PATCH/DELETE /api/comments/:id` |
 | Notifications | `GET /api/notifications` · `PATCH /api/notifications/:id/read` · `PATCH /api/notifications/read-all` |
 | Analytics | `GET /api/analytics/dashboard` · `GET /api/analytics/productivity` |
